@@ -1,0 +1,37 @@
+{
+  "name": "@firafighter/firaleverage",
+  "description": "Smart contracts for firafighter leverage",
+  "private": true,
+  "version": "0.0.0",
+  "devDependencies": { 
+    "lint-staged": "^13.2.3",
+    "solhint": "^3.4.1",
+    "tsx": "^3.12.7"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "install": "forge install", 
+    "precommit": "lint-staged",
+    "test": "forge clean && forge test",
+    "coverage": "forge coverage",
+    "coverage:lcov": "forge coverage --report lcov",
+    "build": "forge build",
+    "format": "forge fmt src test ",
+    "format:check": "npm run format --check",
+    "lint:check": "npm run solhint",
+    "smt:check": "FOUNDRY_PROFILE=smt forge build --names",
+    "lint": "npm run lint:check --fix",
+    "solhint": "solhint './{src}/**/*.sol'"
+  },
+  "lint-staged": {
+    "*.sol": [
+      "solhint --fix --max-warnings 0",
+      "forge fmt"
+    ]
+  },
+  "dependencies": {
+    "@openzeppelin/merkle-tree": "^1.0.7"
+  }
+}

@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  min-height: 100vh;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Futuristic scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FF6B35;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FFD700;
+}
+
+/* Cyber grid background */
+.cyber-bg {
+  background-image: 
+    linear-gradient(rgba(255, 107, 53, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 107, 53, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-position: 0 0, 0 0;
+}
+
+/* Glowing text */
+.glow-text {
+  text-shadow: 0 0 10px rgba(255, 107, 53, 0.8),
+               0 0 20px rgba(255, 107, 53, 0.6),
+               0 0 30px rgba(255, 107, 53, 0.4);
+}
+
+.glow-text-secondary {
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.8),
+               0 0 20px rgba(255, 215, 0, 0.6),
+               0 0 30px rgba(255, 215, 0, 0.4);
+}
