@@ -37,12 +37,16 @@ export function TransferUSD0({ contractAddress }: TransferUSD0Props) {
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
       hash,
-      onSuccess: () => {
-        setAmount(""); // Clear amount after successful transfer
-        // Invalidate all queries to refetch balances and positions
-        queryClient.invalidateQueries();
-      },
     });
+
+  // Clear amount and invalidate queries after successful transfer
+  useEffect(() => {
+    if (isConfirmed) {
+      setAmount(""); // Clear amount after successful transfer
+      // Invalidate all queries to refetch balances and positions
+      queryClient.invalidateQueries();
+    }
+  }, [isConfirmed, queryClient]);
 
   const handleTransfer = () => {
     if (!contractAddress || !address || !amount) return;

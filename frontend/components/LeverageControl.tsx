@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { useQueryClient } from "@tanstack/react-query";
 import { UZRLeverageABI } from "@/lib/contracts";
@@ -19,11 +19,14 @@ export function LeverageControl({ contractAddress }: LeverageControlProps) {
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
       hash,
-      onSuccess: () => {
-        // Invalidate all queries to refetch user position and balances
-        queryClient.invalidateQueries();
-      },
     });
+
+  // Invalidate all queries to refetch user position and balances after successful transaction
+  useEffect(() => {
+    if (isConfirmed) {
+      queryClient.invalidateQueries();
+    }
+  }, [isConfirmed, queryClient]);
 
   const handleLeverage = async () => {
     if (!contractAddress || !address || !iterations) return;

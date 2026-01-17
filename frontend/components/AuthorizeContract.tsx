@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from "wagmi";
 import { LendingMarketABI, CONTRACT_ADDRESSES } from "@/lib/contracts";
 
@@ -27,11 +28,14 @@ export function AuthorizeContract({ contractAddress }: AuthorizeContractProps) {
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
       hash,
-      onSuccess: () => {
-        // Refetch authorization status after successful transaction
-        refetch();
-      },
     });
+
+  // Refetch authorization status after successful transaction
+  useEffect(() => {
+    if (isConfirmed) {
+      refetch();
+    }
+  }, [isConfirmed, refetch]);
 
   const handleAuthorize = () => {
     if (!contractAddress || !address) return;

@@ -17,57 +17,54 @@ export function DeployContract({ onDeployed }: DeployContractProps) {
   const [hash, setHash] = useState<`0x${string}` | undefined>(undefined);
   const [error, setError] = useState<Error | null>(null);
 
-  const { isLoading: isConfirming, isSuccess: isConfirmed, data: receipt } =
+  const { isLoading: isConfirming, isSuccess: isConfirmed, data: receipt, isError: receiptError, error: receiptErrorData } =
     useWaitForTransactionReceipt({
       hash,
-      onSuccess: (receipt) => {
-        // Extract deployed contract address from transaction receipt
-        const contractAddress = receipt.contractAddress;
-        if (contractAddress) {
-          setDeployedAddress(contractAddress);
-          setIsDeploying(false);
-          if (onDeployed) {
-            onDeployed(contractAddress);
-          }
-        } else {
-          // If contractAddress is not in receipt, log and let useEffect retry
-          console.warn("Contract address not in receipt immediately, will retry...", receipt);
-          // The useEffect will handle retrying to fetch the contract address
-        }
-      },
-      onError: (err) => {
-        console.error("Transaction receipt error:", err);
-        setError(err as Error);
-        setIsDeploying(false);
-      },
     });
 
-  // Also check receipt directly and retry fetching if contractAddress is missing
+  // Handle transaction receipt errors
+  useEffect(() => {
+    if (receiptError && receiptErrorData) {
+      console.error("Transaction receipt error:", receiptErrorData);
+      setError(receiptErrorData as Error);
+      setIsDeploying(false);
+    }
+  }, [receiptError, receiptErrorData]);
+
+  // Check receipt directly and retry fetching if contractAddress is missing
   useEffect(() => {
     const checkReceipt = async () => {
       if (hash && !deployedAddress && isConfirmed) {
         let finalReceipt = receipt;
         
+        // Extract deployed contract address from transaction receipt
+        if (receipt?.contractAddress) {
+          setDeployedAddress(receipt.contractAddress);
+          setIsDeploying(false);
+          if (onDeployed) {
+            onDeployed(receipt.contractAddress);
+          }
+          return;
+        }
+
         // If receipt doesn't have contractAddress, try fetching it again with retries
-        if (!receipt?.contractAddress) {
-          console.log("Receipt missing contractAddress, retrying fetch...");
-          // Retry up to 3 times with delays
-          for (let i = 0; i < 3; i++) {
-            try {
-              // Wait before retrying (increasing delay)
-              await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1)));
-              finalReceipt = await getTransactionReceipt(config, { hash });
-              if (finalReceipt?.contractAddress) {
-                break;
-              }
-            } catch (err) {
-              console.error(`Error fetching receipt (attempt ${i + 1}):`, err);
-              if (i === 2) {
-                // Last attempt failed, set error
-                setError(new Error("Failed to retrieve contract address from transaction receipt after multiple attempts"));
-                setIsDeploying(false);
-                return;
-              }
+        console.log("Receipt missing contractAddress, retrying fetch...");
+        // Retry up to 3 times with delays
+        for (let i = 0; i < 3; i++) {
+          try {
+            // Wait before retrying (increasing delay)
+            await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1)));
+            finalReceipt = await getTransactionReceipt(config, { hash });
+            if (finalReceipt?.contractAddress) {
+              break;
+            }
+          } catch (err) {
+            console.error(`Error fetching receipt (attempt ${i + 1}):`, err);
+            if (i === 2) {
+              // Last attempt failed, set error
+              setError(new Error("Failed to retrieve contract address from transaction receipt after multiple attempts"));
+              setIsDeploying(false);
+              return;
             }
           }
         }

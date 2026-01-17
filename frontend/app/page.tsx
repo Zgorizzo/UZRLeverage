@@ -55,7 +55,7 @@ export default function Home() {
           </h3>
           <p className="text-red-300 text-sm leading-relaxed">
             This software is <strong>experimental</strong> and has <strong>not been audited</strong>.
-            It is provided "as is" without warranty of any kind. Use of this software may result in
+            It is provided &quot;as is&quot; without warranty of any kind. Use of this software may result in
             <strong> financial loss</strong>. The authors and contributors are not responsible for any losses,
             damages, or liabilities that may arise from the use of this software.{" "}
             <strong className="text-red-200">You use this software at your own risk.</strong>
